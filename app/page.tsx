@@ -1,39 +1,37 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CartButton from "./components/CartButton";
+import AddToCartButton from "./components/AddToCartButton";
 
 export default function Page() {
   const [isAdultConfirmed, setIsAdultConfirmed] = useState(false);
   const [showRejected, setShowRejected] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDrink, setSelectedDrink] = useState("pachacha");
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const audio = new Audio("/musica.mp3");
-    audio.loop = true;
-    audio.volume = 0.4;
-    audioRef.current = audio;
+    const verified = localStorage.getItem("ageVerified");
+
+    if (verified === "true") {
+      setIsAdultConfirmed(true);
+      window.dispatchEvent(new Event("startGlobalMusic"));
+    }
 
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
     return () => {
-      audio.pause();
-      audioRef.current = null;
       window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
   const handleAdultYes = () => {
+    localStorage.setItem("ageVerified", "true");
     setShowRejected(false);
     setIsAdultConfirmed(true);
-
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {});
-    }
+    window.dispatchEvent(new Event("startGlobalMusic"));
   };
 
   const handleAdultNo = () => {
@@ -106,16 +104,6 @@ export default function Page() {
             padding: "20px",
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(circle at 50% 30%, rgba(255,255,255,0.03), transparent 20%), radial-gradient(circle at 50% 100%, rgba(255,255,255,0.02), transparent 30%)",
-              filter: "blur(16px)",
-            }}
-          />
-
           <div
             style={{
               position: "relative",
@@ -255,20 +243,11 @@ export default function Page() {
                 flexWrap: "wrap",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                 <img
                   src="/logo.png"
                   alt="Vem T'Aki"
-                  style={{
-                    width: isMobile ? "42px" : "54px",
-                    opacity: 0.95,
-                  }}
+                  style={{ width: isMobile ? "42px" : "54px", opacity: 0.95 }}
                 />
 
                 <div>
@@ -308,7 +287,6 @@ export default function Page() {
                 }}
               >
                 <CartButton />
-
                 <a href="/encomendas" style={topActionBtn}>
                   Encomendar
                 </a>
@@ -328,8 +306,8 @@ export default function Page() {
               src="/marca.mp4"
               autoPlay
               muted
-              loop
               playsInline
+              poster="/fundo-luxo.png"
               style={{
                 position: "absolute",
                 inset: 0,
@@ -367,18 +345,7 @@ export default function Page() {
                   marginTop: isMobile ? "20px" : "90px",
                 }}
               >
-                <div
-                  style={{
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: "11px",
-                    letterSpacing: "0.34em",
-                    textTransform: "uppercase",
-                    color: "#d1bc93",
-                    marginBottom: "18px",
-                  }}
-                >
-                  Assinatura sensorial
-                </div>
+                <div style={eyebrow}>Assinatura sensorial</div>
 
                 <h1
                   style={{
@@ -533,7 +500,7 @@ export default function Page() {
               <div
                 style={{
                   position: "relative",
-                  minHeight: isMobile ? "420px" : "760px",
+                  minHeight: isMobile ? "500px" : "760px",
                   borderRadius: "28px",
                   overflow: "hidden",
                   background:
@@ -558,7 +525,7 @@ export default function Page() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: isMobile ? "28px" : "40px",
+                    padding: isMobile ? "28px 28px 105px" : "40px 40px 120px",
                   }}
                 >
                   <img
@@ -571,6 +538,25 @@ export default function Page() {
                       filter: "drop-shadow(0 0 30px rgba(212,190,160,0.10))",
                     }}
                   />
+
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: isMobile ? "22px" : "34px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      zIndex: 3,
+                      width: isMobile ? "calc(100% - 32px)" : "auto",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <AddToCartButton
+                      id={activeDrink.id}
+                      nome={activeDrink.nome}
+                      imagem={activeDrink.img}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -614,75 +600,30 @@ export default function Page() {
                     {activeDrink.frase}
                   </p>
 
-                  <div
-                    style={{
-                      display: "grid",
-                      gap: "14px",
-                      marginBottom: "24px",
-                    }}
-                  >
+                  <div style={{ display: "grid", gap: "14px", marginBottom: "24px" }}>
                     <div
                       style={{
-                        padding: "18px 18px",
+                        padding: "18px",
                         borderRadius: "18px",
                         background: "rgba(255,255,255,0.02)",
                         border: "1px solid rgba(214,197,160,0.08)",
                       }}
                     >
-                      <div
-                        style={{
-                          fontFamily: "Arial, sans-serif",
-                          fontSize: "12px",
-                          letterSpacing: "0.18em",
-                          textTransform: "uppercase",
-                          color: "#c7b087",
-                          marginBottom: "6px",
-                        }}
-                      >
-                        Preço unitário
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: 'Georgia, "Times New Roman", serif',
-                          fontSize: "30px",
-                          color: "#efe4cf",
-                        }}
-                      >
-                        15 €
-                      </div>
+                      <div style={smallLabel}>Preço unitário</div>
+                      <div style={priceText}>15 €</div>
                     </div>
 
                     <div
                       style={{
-                        padding: "18px 18px",
+                        padding: "18px",
                         borderRadius: "18px",
                         background:
                           "linear-gradient(180deg, rgba(235,224,203,0.08), rgba(194,166,115,0.08))",
                         border: "1px solid rgba(214,197,160,0.12)",
                       }}
                     >
-                      <div
-                        style={{
-                          fontFamily: "Arial, sans-serif",
-                          fontSize: "12px",
-                          letterSpacing: "0.18em",
-                          textTransform: "uppercase",
-                          color: "#c7b087",
-                          marginBottom: "6px",
-                        }}
-                      >
-                        Pack recomendado
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: 'Georgia, "Times New Roman", serif',
-                          fontSize: "32px",
-                          color: "#efe4cf",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        3 por 40 €
-                      </div>
+                      <div style={smallLabel}>Pack recomendado</div>
+                      <div style={priceText}>3 por 40 €</div>
                       <div
                         style={{
                           fontFamily: "Arial, sans-serif",
@@ -696,19 +637,13 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "12px",
-                    flexWrap: "wrap",
-                  }}
-                >
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <a href={activeDrink.href} style={heroBtn}>
                     Descobrir história
                   </a>
 
                   <a href="/encomendas" style={secondaryTopBtn}>
-                    Comprar agora
+                    Finalizar compra
                   </a>
                 </div>
               </div>
@@ -780,6 +715,7 @@ export default function Page() {
               </a>
             </div>
           </section>
+
           <footer
             style={{
               maxWidth: "1200px",
@@ -812,26 +748,11 @@ export default function Page() {
                   <img
                     src="/logo.png"
                     alt="Vem T'Aki"
-                    style={{
-                      width: isMobile ? "52px" : "60px",
-                      opacity: 0.95,
-                    }}
+                    style={{ width: isMobile ? "52px" : "60px", opacity: 0.95 }}
                   />
 
                   <div>
-                    <div
-                      style={{
-                        fontFamily: "Arial, sans-serif",
-                        fontSize: "11px",
-                        letterSpacing: "0.30em",
-                        textTransform: "uppercase",
-                        color: "#c9b286",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      Assinatura sensorial
-                    </div>
-
+                    <div style={smallLabel}>Assinatura sensorial</div>
                     <div
                       style={{
                         fontFamily: 'Georgia, "Times New Roman", serif',
@@ -861,18 +782,7 @@ export default function Page() {
               </div>
 
               <div>
-                <div
-                  style={{
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: "11px",
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    color: "#c8ab78",
-                    marginBottom: "12px",
-                  }}
-                >
-                  Acompanhe-nos
-                </div>
+                <div style={smallLabel}>Acompanhe-nos</div>
 
                 <a
                   href="https://instagram.com/vem_t_aki"
@@ -909,25 +819,9 @@ export default function Page() {
               </div>
 
               <div>
-                <div
-                  style={{
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: "11px",
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    color: "#c8ab78",
-                    marginBottom: "12px",
-                  }}
-                >
-                  Informação
-                </div>
+                <div style={smallLabel}>Informação</div>
 
-                <div
-                  style={{
-                    display: "grid",
-                    gap: "10px",
-                  }}
-                >
+                <div style={{ display: "grid", gap: "10px" }}>
                   <a href="/privacidade" style={footerLink}>
                     Política de Privacidade
                   </a>
@@ -974,6 +868,21 @@ const eyebrow: React.CSSProperties = {
   textTransform: "uppercase",
   color: "#c9b286",
   marginBottom: "16px",
+};
+
+const smallLabel: React.CSSProperties = {
+  fontFamily: "Arial, sans-serif",
+  fontSize: "12px",
+  letterSpacing: "0.18em",
+  textTransform: "uppercase",
+  color: "#c7b087",
+  marginBottom: "6px",
+};
+
+const priceText: React.CSSProperties = {
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: "30px",
+  color: "#efe4cf",
 };
 
 const footerLink: React.CSSProperties = {
