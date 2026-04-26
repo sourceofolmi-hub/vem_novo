@@ -24,7 +24,7 @@ export default function AddToCartButton({ id, nome, imagem }: Props) {
     }
 
     setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+    setTimeout(() => setAdded(false), 1200);
   };
 
   return (
@@ -34,8 +34,26 @@ export default function AddToCartButton({ id, nome, imagem }: Props) {
         gap: "10px",
         justifyItems: "center",
         width: "100%",
+        position: "relative",
       }}
     >
+      {/* ANIMAÇÃO +1 */}
+      {added && (
+        <div
+          style={{
+            position: "absolute",
+            top: "-10px",
+            fontSize: "14px",
+            fontWeight: 700,
+            color: "#d4bea0",
+            animation: "floatUp 1.2s ease forwards",
+            pointerEvents: "none",
+          }}
+        >
+          +{quantidade}
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -72,26 +90,30 @@ export default function AddToCartButton({ id, nome, imagem }: Props) {
         </button>
 
         <button onClick={adicionarAoCarrinho} style={addBtnStyle}>
-          Adicionar ao carrinho
+          Adicionar
         </button>
       </div>
-
-      {added && (
-        <div
-          style={{
-            color: "#8fd19e",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "13px",
-            fontWeight: 700,
-          }}
-        >
-          Adicionado ao carrinho
-        </div>
-      )}
 
       <Link href="/encomendas" style={checkoutBtnStyle}>
         Finalizar encomenda
       </Link>
+
+      {/* CSS ANIMAÇÃO */}
+      <style jsx>{`
+        @keyframes floatUp {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          20% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-25px);
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -6,23 +6,28 @@ export default function GlobalAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const startAudio = () => {
-      const audio = audioRef.current;
-      if (!audio) return;
+    const audio = new Audio("/musica.mp3");
+    audio.loop = true;
+    audio.volume = 0.4;
+    audioRef.current = audio;
 
-      audio.volume = 0.4;
-      audio.loop = true;
+    const start = () => {
       audio.play().catch(() => {});
     };
 
-    window.addEventListener("startGlobalMusic", startAudio);
-    document.addEventListener("click", startAudio);
+    const verified = localStorage.getItem("ageVerified");
+
+    if (verified === "true") {
+      start();
+    }
+
+    window.addEventListener("startGlobalMusic", start);
 
     return () => {
-      window.removeEventListener("startGlobalMusic", startAudio);
-      document.removeEventListener("click", startAudio);
+      audio.pause();
+      window.removeEventListener("startGlobalMusic", start);
     };
   }, []);
 
-  return <audio ref={audioRef} src="/musica.mp3" preload="auto" />;
+  return null;
 }
