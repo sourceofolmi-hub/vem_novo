@@ -16,7 +16,7 @@ export default function GlobalAudio() {
     };
 
     window.addEventListener("startGlobalMusic", startAudio);
-    document.addEventListener("click", startAudio, { once: true });
+    document.addEventListener("click", startAudio);
 
     return () => {
       window.removeEventListener("startGlobalMusic", startAudio);
