@@ -462,49 +462,37 @@ export default function Page() {
                 paddingBottom: "6px",
               }}
             >
-                           {bebidas.map((bebida) => {
-                const active = bebida.id === selectedDrink;
+          
+              </div>
+                      
+  {bebidas.map((bebida) => {
+  const active = bebida.id === selectedDrink;
 
-                return (
-                  <div
-                    key={bebida.id}
-                    style={{
-                      display: "grid",
-                      gap: "10px",
-                      justifyItems: "center",
-                    }}
-                  >
-                    <button
-                      onClick={() => setSelectedDrink(bebida.id)}
-                      style={{
-                        whiteSpace: "nowrap",
-                        borderRadius: "999px",
-                        padding: isMobile ? "12px 18px" : "14px 24px",
-                        border: active
-                          ? "1px solid rgba(229,214,186,0.26)"
-                          : "1px solid rgba(214,197,160,0.18)",
-                        background: active
-                          ? "linear-gradient(180deg, rgba(235,224,203,0.95), rgba(194,166,115,0.95))"
-                          : "rgba(14,14,14,0.46)",
-                        color: active ? "#18120a" : "#d8c6a5",
-                        fontFamily: "Arial, sans-serif",
-                        fontWeight: 700,
-                        fontSize: "14px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {bebida.nome}
-                    </button>
-
-                    <AddToCartButton
-                      id={bebida.id}
-                      nome={bebida.nome}
-                      imagem={bebida.img}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+  return (
+    <button
+      key={bebida.id}
+      onClick={() => setSelectedDrink(bebida.id)}
+      style={{
+        whiteSpace: "nowrap",
+        borderRadius: "999px",
+        padding: isMobile ? "12px 18px" : "14px 24px",
+        border: active
+          ? "1px solid rgba(229,214,186,0.26)"
+          : "1px solid rgba(214,197,160,0.18)",
+        background: active
+          ? "linear-gradient(180deg, rgba(235,224,203,0.95), rgba(194,166,115,0.95))"
+          : "rgba(14,14,14,0.46)",
+        color: active ? "#18120a" : "#d8c6a5",
+        fontFamily: "Arial, sans-serif",
+        fontWeight: 700,
+        fontSize: "14px",
+        cursor: "pointer",
+      }}
+    >
+      {bebida.nome}
+    </button>
+  );
+})}
 
             <div
               style={{
