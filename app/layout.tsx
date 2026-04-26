@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CartProvider } from "./components/CartContext";
 import CookieBanner from "./components/CookieBanner";
 import WhatsAppButton from "./components/WhatsAppButton";
+import GlobalAudio from "./components/GlobalAudio";
 
 export const metadata: Metadata = {
   title: "Vem T'Aki",
@@ -23,6 +24,7 @@ export default function RootLayout({
         }}
       >
         <CartProvider>
+          <GlobalAudio />
           {children}
           <CookieBanner />
           <WhatsAppButton />
