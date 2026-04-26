@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import CartButton from "./components/CartButton";
 import AddToCartButton from "./components/AddToCartButton";
 
@@ -287,9 +288,9 @@ export default function Page() {
                 }}
               >
                 <CartButton />
-                <a href="/encomendas" style={topActionBtn}>
+                <Link href="/encomendas" style={topActionBtn}>
                   Encomendar
-                </a>
+                </Link>
               </div>
             </div>
           </header>
@@ -387,9 +388,9 @@ export default function Page() {
                   marginTop: isMobile ? "20px" : "0",
                 }}
               >
-                <a href="#colecao" style={heroBtn}>
+                <Link href="#colecao" style={heroBtn}>
                   Descobrir coleção
-                </a>
+                </Link>
               </div>
             </div>
           </section>
@@ -638,13 +639,13 @@ export default function Page() {
                 </div>
 
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                  <a href={activeDrink.href} style={heroBtn}>
+                  <Link href={activeDrink.href} style={heroBtn}>
                     Descobrir história
-                  </a>
+                  </Link>
 
-                  <a href="/encomendas" style={secondaryTopBtn}>
+                  <Link href="/encomendas" style={secondaryTopBtn}>
                     Finalizar compra
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -822,21 +823,21 @@ export default function Page() {
                 <div style={smallLabel}>Informação</div>
 
                 <div style={{ display: "grid", gap: "10px" }}>
-                  <a href="/privacidade" style={footerLink}>
+                  <Link href="/privacidade" style={footerLink}>
                     Política de Privacidade
-                  </a>
-                  <a href="/cookies" style={footerLink}>
+                  </Link>
+                  <Link href="/cookies" style={footerLink}>
                     Política de Cookies
-                  </a>
-                  <a href="/termos" style={footerLink}>
+                  </Link>
+                  <Link href="/termos" style={footerLink}>
                     Termos e Condições
-                  </a>
-                  <a href="/entregas" style={footerLink}>
+                  </Link>
+                  <Link href="/entregas" style={footerLink}>
                     Entregas e Devoluções
-                  </a>
-                  <a href="/encomendas" style={footerLink}>
+                  </Link>
+                  <Link href="/encomendas" style={footerLink}>
                     Encomendar
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
