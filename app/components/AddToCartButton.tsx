@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useCart } from "./CartContext";
 
 type Props = {
   id: string;
@@ -11,144 +9,103 @@ type Props = {
 };
 
 export default function AddToCartButton({ id, nome, imagem }: Props) {
-  const { addItem } = useCart();
-  const [quantidade, setQuantidade] = useState(1);
+  const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const diminuir = () => setQuantidade((q) => Math.max(1, q - 1));
-  const aumentar = () => setQuantidade((q) => q + 1);
+  const addToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existing = cart.find((item: any) => item.id === id);
 
-  const adicionarAoCarrinho = () => {
-    for (let i = 0; i < quantidade; i++) {
-      addItem({ id, nome, imagem });
+    if (existing) {
+      existing.quantidade += qty;
+    } else {
+      cart.push({
+        id,
+        nome,
+        imagem,
+        quantidade: qty,
+        preco: 15,
+      });
     }
 
+    localStorage.setItem("cart", JSON.stringify(cart));
+window.dispatchEvent(new Event("cartUpdated"));
+window.dispatchEvent(new Event("productAdded"));
+
     setAdded(true);
-    setTimeout(() => setAdded(false), 1200);
+    setTimeout(() => setAdded(false), 1400);
   };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: "10px",
-        justifyItems: "center",
-        width: "100%",
-        position: "relative",
-      }}
-    >
-      {/* ANIMAÇÃO +1 */}
-      {added && (
-        <div
-          style={{
-            position: "absolute",
-            top: "-10px",
-            fontSize: "14px",
-            fontWeight: 700,
-            color: "#d4bea0",
-            animation: "floatUp 1.2s ease forwards",
-            pointerEvents: "none",
-          }}
-        >
-          +{quantidade}
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          background: "rgba(10,10,10,0.78)",
-          padding: "12px 14px",
-          borderRadius: "999px",
-          border: "1px solid rgba(200,171,120,0.22)",
-          backdropFilter: "blur(8px)",
-          boxShadow: "0 0 18px rgba(0,0,0,0.30)",
-        }}
-      >
-        <button onClick={diminuir} style={qtyBtnStyle}>
-          -
+    <div style={wrapper}>
+      {/* QUANTIDADE */}
+      <div style={qtyBox}>
+        <button onClick={() => setQty(qty > 1 ? qty - 1 : 1)} style={qtyBtn}>
+          −
         </button>
 
-        <span
-          style={{
-            minWidth: "32px",
-            textAlign: "center",
-            color: "#f2ede5",
-            fontFamily: "Arial, sans-serif",
-            fontWeight: 700,
-          }}
-        >
-          {quantidade}
-        </span>
+        <span style={qtyText}>{qty}</span>
 
-        <button onClick={aumentar} style={qtyBtnStyle}>
+        <button onClick={() => setQty(qty + 1)} style={qtyBtn}>
           +
-        </button>
-
-        <button onClick={adicionarAoCarrinho} style={addBtnStyle}>
-          Adicionar
         </button>
       </div>
 
-      <Link href="/encomendas" style={checkoutBtnStyle}>
-        Finalizar encomenda
-      </Link>
-
-      {/* CSS ANIMAÇÃO */}
-      <style jsx>{`
-        @keyframes floatUp {
-          0% {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          20% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(-25px);
-          }
-        }
-      `}</style>
+      {/* BOTÃO */}
+      <button onClick={addToCart} style={button(added)}>
+        {added ? "Adicionado ✓" : "Adicionar"}
+      </button>
     </div>
   );
 }
 
-const qtyBtnStyle: React.CSSProperties = {
-  width: "34px",
-  height: "34px",
+/* ---------- STYLES ---------- */
+
+const wrapper: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: "14px",
+};
+
+const qtyBox: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
   borderRadius: "999px",
-  border: "1px solid rgba(200,171,120,0.18)",
-  background: "rgba(20,14,10,0.45)",
-  color: "#d4bea0",
-  fontWeight: 700,
+  border: "1px solid rgba(214,197,160,0.22)",
+  background: "rgba(255,255,255,0.03)",
+  padding: "6px 10px",
+  gap: "12px",
+};
+
+const qtyBtn: React.CSSProperties = {
+  background: "transparent",
+  border: "none",
+  color: "#eadfc8",
+  fontSize: "18px",
   cursor: "pointer",
 };
 
-const addBtnStyle: React.CSSProperties = {
-  borderRadius: "999px",
-  padding: "12px 18px",
-  border: "1px solid rgba(200,171,120,0.18)",
-  background: "linear-gradient(180deg, #dbc39a, #b48f54)",
-  color: "#120d08",
-  fontFamily: "Arial, sans-serif",
+const qtyText: React.CSSProperties = {
+  minWidth: "20px",
+  textAlign: "center",
   fontWeight: 700,
+  color: "#eadfc8",
+};
+
+const button = (added: boolean): React.CSSProperties => ({
+  borderRadius: "999px",
+  padding: "14px 22px",
+  border: "1px solid rgba(214,197,160,0.28)",
+  background: added
+    ? "linear-gradient(180deg, #d9f2c7, #9fca7a)"
+    : "linear-gradient(180deg, #f5e6c8, #c5a96e)",
+  color: "#17110a",
+  fontFamily: "Arial, sans-serif",
+  fontWeight: 900,
   fontSize: "14px",
   cursor: "pointer",
-};
-
-const checkoutBtnStyle: React.CSSProperties = {
-  borderRadius: "999px",
-  padding: "11px 18px",
-  border: "1px solid rgba(214,197,160,0.18)",
-  background: "rgba(14,14,14,0.68)",
-  color: "#d9c7a5",
-  textDecoration: "none",
-  fontFamily: "Arial, sans-serif",
-  fontWeight: 700,
-  fontSize: "13px",
-};
+  boxShadow: added
+    ? "0 0 34px rgba(159,202,122,0.45)"
+    : "0 14px 34px rgba(197,169,110,0.28)",
+  transform: added ? "scale(1.05)" : "scale(1)",
+});

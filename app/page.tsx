@@ -23,9 +23,7 @@ export default function Page() {
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const handleAdultYes = () => {
@@ -35,9 +33,7 @@ export default function Page() {
     window.dispatchEvent(new Event("startGlobalMusic"));
   };
 
-  const handleAdultNo = () => {
-    setShowRejected(true);
-  };
+  const handleAdultNo = () => setShowRejected(true);
 
   const bebidas = [
     {
@@ -107,8 +103,6 @@ export default function Page() {
         >
           <div
             style={{
-              position: "relative",
-              zIndex: 2,
               width: "100%",
               maxWidth: "760px",
               padding: isMobile ? "38px 22px" : "54px 42px",
@@ -132,18 +126,7 @@ export default function Page() {
               }}
             />
 
-            <div
-              style={{
-                fontFamily: "Arial, sans-serif",
-                fontSize: "11px",
-                letterSpacing: "0.34em",
-                textTransform: "uppercase",
-                color: "#c9b286",
-                marginBottom: "14px",
-              }}
-            >
-              Entrada reservada
-            </div>
+            <div style={eyebrow}>Entrada reservada</div>
 
             <h1
               style={{
@@ -252,18 +235,7 @@ export default function Page() {
                 />
 
                 <div>
-                  <div
-                    style={{
-                      fontFamily: "Arial, sans-serif",
-                      fontSize: "11px",
-                      letterSpacing: "0.30em",
-                      textTransform: "uppercase",
-                      color: "#c9b286",
-                      marginBottom: "3px",
-                    }}
-                  >
-                    Coleção de autor
-                  </div>
+                  <div style={smallLabel}>Coleção de autor</div>
 
                   <div
                     style={{
@@ -278,20 +250,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "12px",
-                  flexWrap: "wrap",
-                  justifyContent: isMobile ? "center" : "flex-end",
-                  width: isMobile ? "100%" : "auto",
-                }}
-              >
-                <CartButton />
-                <Link href="/encomendas" style={topActionBtn}>
-                  Encomendar
-                </Link>
-              </div>
+              <CartButton />
             </div>
           </header>
 
@@ -304,12 +263,12 @@ export default function Page() {
             }}
           >
             <video
-  src="/marca.mp4"
-  autoPlay
-  muted
-  playsInline
-  poster="/fundo-luxo.png"
-  onEnded={(e) => e.currentTarget.pause()}
+              src="/marca.mp4"
+              autoPlay
+              muted
+              playsInline
+              poster="/fundo-luxo.png"
+              onEnded={(e) => e.currentTarget.pause()}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -323,8 +282,7 @@ export default function Page() {
               style={{
                 position: "absolute",
                 inset: 0,
-                background:
-                  "linear-gradient(rgba(6,6,6,0.35), rgba(6,6,6,0.62))",
+                background: "linear-gradient(rgba(6,6,6,0.35), rgba(6,6,6,0.62))",
               }}
             />
 
@@ -366,16 +324,7 @@ export default function Page() {
                   memória.
                 </h1>
 
-                <p
-                  style={{
-                    margin: 0,
-                    maxWidth: "520px",
-                    fontFamily: "Arial, sans-serif",
-                    fontSize: isMobile ? "15px" : "19px",
-                    lineHeight: 1.8,
-                    color: "rgba(242,237,229,0.82)",
-                  }}
-                >
+                <p style={heroText(isMobile)}>
                   Cada criação Vem T'Aki nasce da procura por intensidade,
                   detalhe e emoção. Uma coleção pensada para transformar um
                   instante num ritual íntimo e memorável.
@@ -462,35 +411,36 @@ export default function Page() {
                 paddingBottom: "6px",
               }}
             >
-                               
-  {bebidas.map((bebida) => {
-  const active = bebida.id === selectedDrink;
+              {bebidas.map((bebida) => {
+                const active = bebida.id === selectedDrink;
 
-  return (
-    <button
-      key={bebida.id}
-      onClick={() => setSelectedDrink(bebida.id)}
-      style={{
-        whiteSpace: "nowrap",
-        borderRadius: "999px",
-        padding: isMobile ? "12px 18px" : "14px 24px",
-        border: active
-          ? "1px solid rgba(229,214,186,0.26)"
-          : "1px solid rgba(214,197,160,0.18)",
-        background: active
-          ? "linear-gradient(180deg, rgba(235,224,203,0.95), rgba(194,166,115,0.95))"
-          : "rgba(14,14,14,0.46)",
-        color: active ? "#18120a" : "#d8c6a5",
-        fontFamily: "Arial, sans-serif",
-        fontWeight: 700,
-        fontSize: "14px",
-        cursor: "pointer",
-      }}
-    >
-      {bebida.nome}
-    </button>
-  );
-})}
+                return (
+                  <button
+                    key={bebida.id}
+                    onClick={() => setSelectedDrink(bebida.id)}
+                    style={{
+                      whiteSpace: "nowrap",
+                      borderRadius: "999px",
+                      padding: isMobile ? "12px 18px" : "14px 24px",
+                      border: active
+                        ? "1px solid rgba(229,214,186,0.26)"
+                        : "1px solid rgba(214,197,160,0.18)",
+                      background: active
+                        ? "linear-gradient(180deg, rgba(235,224,203,0.95), rgba(194,166,115,0.95))"
+                        : "rgba(14,14,14,0.46)",
+                      color: active ? "#18120a" : "#d8c6a5",
+                      fontFamily: "Arial, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      transition: "all 180ms ease",
+                    }}
+                  >
+                    {bebida.nome}
+                  </button>
+                );
+              })}
+            </div>
 
             <div
               style={{
@@ -528,38 +478,36 @@ export default function Page() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: isMobile ? "28px 28px 105px" : "40px 40px 120px",
+                    padding: isMobile ? "28px 28px 125px" : "40px 40px 145px",
+                   transition: "all 500ms ease",
+ 
                   }}
                 >
-                  <img
-                    src={activeDrink.img}
-                    alt={activeDrink.nome}
-                    style={{
-                      width: isMobile ? "76%" : "68%",
-                      maxHeight: isMobile ? "360px" : "620px",
-                      objectFit: "contain",
-                      filter: "drop-shadow(0 0 30px rgba(212,190,160,0.10))",
-                    }}
-                  />
+                <img
+  key={activeDrink.id}
+  src={activeDrink.img}
+  alt={activeDrink.nome}
+  style={{
+    width: isMobile ? "76%" : "68%",
+    maxHeight: isMobile ? "360px" : "620px",
+    objectFit: "contain",
+    filter: "drop-shadow(0 0 40px rgba(212,190,160,0.20))",
+    transition: "transform 500ms ease, filter 500ms ease",
+    transform: "translateY(0) scale(1)",
+  }}
+/>
 
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: isMobile ? "22px" : "34px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      zIndex: 3,
-                      width: isMobile ? "calc(100% - 32px)" : "auto",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <AddToCartButton
-                      id={activeDrink.id}
-                      nome={activeDrink.nome}
-                      imagem={activeDrink.img}
-                    />
-                  </div>
+                <div
+  style={{
+    marginTop: "22px",
+    display: "flex",
+    justifyContent: "center",
+  }}
+>
+  <Link href={activeDrink.href} style={storyLinkBtn}>
+  Descobrir história
+</Link>
+</div>
                 </div>
               </div>
 
@@ -571,7 +519,7 @@ export default function Page() {
                   padding: isMobile ? "24px 20px" : "40px 36px",
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                 }}
               >
                 <div>
@@ -603,7 +551,7 @@ export default function Page() {
                     {activeDrink.frase}
                   </p>
 
-                  <div style={{ display: "grid", gap: "14px", marginBottom: "24px" }}>
+                  <div style={{ display: "grid", gap: "16px" }}>
                     <div
                       style={{
                         padding: "18px",
@@ -613,7 +561,24 @@ export default function Page() {
                       }}
                     >
                       <div style={smallLabel}>Preço unitário</div>
-                      <div style={priceText}>15 €</div>
+
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "18px",
+    flexWrap: "wrap",
+  }}
+>
+  <div style={priceText}>15 €</div>
+
+  <AddToCartButton
+    id={activeDrink.id}
+    nome={activeDrink.nome}
+    imagem={activeDrink.img}
+  />
+</div>
                     </div>
 
                     <div
@@ -627,38 +592,15 @@ export default function Page() {
                     >
                       <div style={smallLabel}>Pack recomendado</div>
                       <div style={priceText}>3 por 40 €</div>
-                      <div
-                        style={{
-                          fontFamily: "Arial, sans-serif",
-                          fontSize: "14px",
-                          color: "#8fd19e",
-                        }}
-                      >
-                        Poupa 5 € ao escolher o pack
+                      <div style={savingBadge}>
+                        ✨ Poupa 5 € ao escolher o pack
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-  <AddToCartButton
-    id={activeDrink.id}
-    nome={activeDrink.nome}
-    imagem={activeDrink.img}
-  />
-
-  <Link href={activeDrink.href} style={heroBtn}>
-    Descobrir história
-  </Link>
-
-  <Link href="/encomendas" style={secondaryTopBtn}>
-    Finalizar compra
-  </Link>
-</div>
-</div>
-</div>
-</div>
-</section>
+              </div>
+            </div>
+          </section>
 
           <section
             style={{
@@ -678,18 +620,7 @@ export default function Page() {
                 textAlign: "center",
               }}
             >
-              <div
-                style={{
-                  fontSize: "11px",
-                  letterSpacing: "0.28em",
-                  textTransform: "uppercase",
-                  color: "#c8ab78",
-                  marginBottom: "12px",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                A experiência continua
-              </div>
+              <div style={eyebrow}>A experiência continua</div>
 
               <p
                 style={{
@@ -707,19 +638,7 @@ export default function Page() {
                 href="https://instagram.com/vem_t_aki"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "14px 22px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(214,197,160,0.18)",
-                  background: "rgba(20,14,10,0.45)",
-                  color: "#efe4cf",
-                  textDecoration: "none",
-                  fontWeight: 700,
-                  fontFamily: "Arial, sans-serif",
-                }}
+                style={instagramBtn}
               >
                 📸 @vem_t_aki
               </a>
@@ -798,20 +717,7 @@ export default function Page() {
                   href="https://instagram.com/vem_t_aki"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "12px 18px",
-                    borderRadius: "999px",
-                    border: "1px solid rgba(214,197,160,0.18)",
-                    background: "rgba(20,14,10,0.45)",
-                    color: "#efe4cf",
-                    textDecoration: "none",
-                    fontWeight: 700,
-                    fontFamily: "Arial, sans-serif",
-                    marginBottom: "12px",
-                  }}
+                  style={instagramBtn}
                 >
                   📸 @vem_t_aki
                 </a>
@@ -822,6 +728,7 @@ export default function Page() {
                     fontSize: "14px",
                     color: "rgba(242,237,229,0.62)",
                     lineHeight: 1.8,
+                    marginTop: "12px",
                   }}
                 >
                   Descubra bastidores, novas criações e momentos exclusivos.
@@ -843,9 +750,6 @@ export default function Page() {
                   </Link>
                   <Link href="/entregas" style={footerLink}>
                     Entregas e Devoluções
-                  </Link>
-                  <Link href="/encomendas" style={footerLink}>
-                    Encomendar
                   </Link>
                 </div>
               </div>
@@ -910,25 +814,21 @@ const sectionText = (isMobile: boolean): React.CSSProperties => ({
   color: "rgba(242,237,229,0.76)",
 });
 
-const topActionBtn: React.CSSProperties = {
-  borderRadius: "999px",
-  padding: "12px 18px",
-  border: "1px solid rgba(214,197,160,0.18)",
-  background: "rgba(14,14,14,0.46)",
-  color: "#d9c7a5",
-  textDecoration: "none",
+const heroText = (isMobile: boolean): React.CSSProperties => ({
+  margin: 0,
+  maxWidth: "520px",
   fontFamily: "Arial, sans-serif",
-  fontWeight: 700,
-  display: "inline-flex",
-  alignItems: "center",
-};
+  fontSize: isMobile ? "15px" : "19px",
+  lineHeight: 1.8,
+  color: "rgba(242,237,229,0.82)",
+});
 
 const heroBtn: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   borderRadius: "999px",
-  padding: "14px 24px",
+  padding: "14px 26px",
   border: "1px solid rgba(229,214,186,0.24)",
   background: "linear-gradient(180deg, #eadfc8, #c5a96e)",
   color: "#17110a",
@@ -937,18 +837,65 @@ const heroBtn: React.CSSProperties = {
   fontWeight: 700,
 };
 
-const secondaryTopBtn: React.CSSProperties = {
+const storyLinkBtn: React.CSSProperties = {
+  marginTop: "18px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "12px 22px",
+  borderRadius: "999px",
+  border: "1px solid rgba(214,197,160,0.18)",
+  background: "rgba(255,255,255,0.035)",
+  color: "#eadfc8",
+  textDecoration: "none",
+  fontFamily: 'Georgia, "Times New Roman", serif',
+  fontSize: "15px",
+  fontWeight: 400,
+  letterSpacing: "0.04em",
+  boxShadow: "0 12px 34px rgba(0,0,0,0.28)",
+};
+
+const savingBadge: React.CSSProperties = {
+  display: "inline-block",
+  marginTop: "10px",
+  padding: "10px 16px",
+  borderRadius: "999px",
+  background: "linear-gradient(135deg, #f5e6c8, #c5a96e)",
+  color: "#1a1208",
+  fontWeight: 800,
+  fontFamily: "Arial, sans-serif",
+  fontSize: "13px",
+  letterSpacing: "0.04em",
+  boxShadow: "0 4px 20px rgba(197,169,110,0.35)",
+};
+
+const instagramBtn: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "10px",
+  padding: "12px 18px",
+  borderRadius: "999px",
+  border: "1px solid rgba(214,197,160,0.18)",
+  background: "rgba(20,14,10,0.45)",
+  color: "#efe4cf",
+  textDecoration: "none",
+  fontWeight: 700,
+  fontFamily: "Arial, sans-serif",
+};
+
+const whatsappBtn: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   borderRadius: "999px",
-  padding: "14px 24px",
-  border: "1px solid rgba(214,197,160,0.18)",
-  background: "rgba(14,14,14,0.46)",
-  color: "#d9c7a5",
+  padding: "13px 22px",
+  border: "1px solid rgba(214,197,160,0.22)",
+  background: "rgba(255,255,255,0.035)",
+  color: "#eadfc8",
   textDecoration: "none",
   fontFamily: "Arial, sans-serif",
-  fontWeight: 700,
+  fontWeight: 800,
+  letterSpacing: "0.03em",
 };
 
 const primaryBtn: React.CSSProperties = {
