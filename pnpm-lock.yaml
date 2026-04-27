@@ -16,7 +16,7 @@ importers:
         specifier: 15.5.7
         version: 15.5.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       nodemailer:
-        specifier: 8.0.4
+        specifier: ^8.0.4
         version: 8.0.4
       react:
         specifier: 19.0.0
