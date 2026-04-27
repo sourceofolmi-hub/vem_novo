@@ -462,9 +462,7 @@ export default function Page() {
                 paddingBottom: "6px",
               }}
             >
-          
-              </div>
-                      
+                               
   {bebidas.map((bebida) => {
   const active = bebida.id === selectedDrink;
 
@@ -643,17 +641,24 @@ export default function Page() {
                 </div>
 
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                  <Link href={activeDrink.href} style={heroBtn}>
-                    Descobrir história
-                  </Link>
+  <AddToCartButton
+    id={activeDrink.id}
+    nome={activeDrink.nome}
+    imagem={activeDrink.img}
+  />
 
-                  <Link href="/encomendas" style={secondaryTopBtn}>
-                    Finalizar compra
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </section>
+  <Link href={activeDrink.href} style={heroBtn}>
+    Descobrir história
+  </Link>
+
+  <Link href="/encomendas" style={secondaryTopBtn}>
+    Finalizar compra
+  </Link>
+</div>
+</div>
+</div>
+</div>
+</section>
 
           <section
             style={{
