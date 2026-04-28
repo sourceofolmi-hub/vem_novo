@@ -11,6 +11,8 @@ export default function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDrink, setSelectedDrink] = useState("pachacha");
   const [productPulse, setProductPulse] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
+  const [slideProgress, setSlideProgress] = useState(0);
 
   useEffect(() => {
     const verified = localStorage.getItem("ageVerified");
@@ -36,6 +38,36 @@ useEffect(() => {
   return () => window.removeEventListener("productAdded", pulse);
 }, []);
 
+useEffect(() => {
+  if (!isAdultConfirmed) return;
+
+  setSlideProgress(0);
+
+  const progress = setInterval(() => {
+    setSlideProgress((p) => (p >= 100 ? 0 : p + 2));
+  }, 80);
+
+  const interval = setInterval(() => {
+    setIsChanging(true);
+
+    setTimeout(() => {
+      setSelectedDrink((current) => {
+        const index = bebidas.findIndex((b) => b.id === current);
+        const nextIndex = (index + 1) % bebidas.length;
+        return bebidas[nextIndex].id;
+      });
+
+      setSlideProgress(0);
+      setIsChanging(false);
+    }, 350);
+  }, 4000);
+
+  return () => {
+    clearInterval(progress);
+    clearInterval(interval);
+  };
+}, [isAdultConfirmed]);
+
   const handleAdultYes = () => {
     localStorage.setItem("ageVerified", "true");
     setShowRejected(false);
@@ -47,27 +79,27 @@ useEffect(() => {
 
  const packs = [
   {
+    id: "pack-descoberta",
+    nome: "Pack Descoberta",
+    descricao: "3 sabores à escolha para descobrir a coleção.",
+    imagem: "/packs/pack-descoberta.png",
+    preco: 39.9,
+  },
+  {
     id: "pack-seducao",
     nome: "Pack Sedução",
     descricao: "Desejo + Clímax + Pachacha",
-    imagem: "/pack-seducao.png",
-    preco: 40,
+    imagem: "/packs/pack-seducao.png",
+    preco: 59.9,
   },
   {
     id: "pack-intenso",
     nome: "Pack Intenso",
     descricao: "Obsessão + Orgasmo + Tântrico",
-    imagem: "/pack-intenso.png",
-    preco: 40,
+    imagem: "/packs/pack-intenso.png",
+    preco: 79.9,
   },
-  {
-    id: "pack-descoberta",
-    nome: "Pack Descoberta",
-    descricao: "3 sabores à escolha para descobrir a coleção.",
-    imagem: "/pack-descoberta.png",
-    preco: 40,
-  },
-]; 
+];
 
   const bebidas = [
     {
@@ -116,18 +148,27 @@ useEffect(() => {
 const reviews = [
   {
     nome: "Mariana S.",
-    texto:
-      "A apresentação é linda e o sabor fica mesmo na memória. Comprei para oferecer e foi um sucesso.",
+    texto: "Adorei o Pack Sedução. A apresentação é linda e parece mesmo um presente premium.",
   },
   {
     nome: "Ricardo M.",
-    texto:
-      "Produto diferente, elegante e com muita personalidade. A embalagem tem um aspeto premium.",
+    texto: "O Pack Intenso surpreendeu. Visual elegante, sabor marcante e entrega rápida.",
   },
   {
     nome: "Joana P.",
-    texto:
-      "Gostei muito da experiência. O pack compensa e as garrafas ficam incríveis numa mesa.",
+    texto: "Comprei o Pack Descoberta para oferecer e toda a gente ficou curiosa. Recomendo.",
+  },
+  {
+    nome: "Sofia A.",
+    texto: "As garrafas são ainda mais bonitas ao vivo. A experiência parece muito cuidada.",
+  },
+  {
+    nome: "João M.",
+    texto: "Entrega discreta e produto com muita personalidade. Já quero experimentar outros.",
+  },
+  {
+    nome: "Carla R.",
+    texto: "Gostei muito do detalhe dos packs. Fica mesmo com aspeto de marca de luxo.",
   },
 ];
   const activeDrink = useMemo(
@@ -542,15 +583,12 @@ const reviews = [
   maxHeight: isMobile ? "360px" : "620px",
   objectFit: "contain",
 
-  filter: productPulse
-    ? "drop-shadow(0 0 60px rgba(212,190,160,0.45))"
-    : "drop-shadow(0 0 40px rgba(212,190,160,0.20))",
+  transition: "opacity 0.6s ease, transform 0.6s ease",
 
-  transition: "transform 500ms ease, filter 500ms ease",
+  opacity: isChanging ? 0 : 1,
+  transform: isChanging ? "scale(0.96)" : "scale(1)",
 
-  transform: productPulse
-    ? "translateY(-8px) scale(1.035)"
-    : "translateY(0) scale(1)",
+  filter: "drop-shadow(0 0 40px rgba(212,190,160,0.25))",
 }}
 />
 
@@ -705,85 +743,94 @@ const reviews = [
   style={{
     maxWidth: "1200px",
     margin: "0 auto",
-    padding: isMobile ? "10px 16px 60px" : "10px 28px 80px",
+    padding: isMobile ? "20px 16px 60px" : "30px 28px 90px",
   }}
 >
-  <div style={eyebrow}>Opiniões de compradores</div>
+  <div style={eyebrow}>Packs exclusivos</div>
 
   <h2
     style={{
-      margin: "0 0 24px",
+      margin: "0 0 14px",
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: isMobile ? "30px" : "48px",
+      fontSize: isMobile ? "34px" : "58px",
       fontWeight: 400,
       color: "#efe4cf",
     }}
   >
-    Quem prova, lembra.
+    Descobre o teu ritual.
   </h2>
+
+  <p style={sectionText(isMobile)}>
+    Packs pensados para oferecer, descobrir ou transformar um momento numa experiência memorável.
+  </p>
 
   <div
     style={{
       display: "grid",
       gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-      gap: "18px",
+      gap: "22px",
+      marginTop: "28px",
     }}
   >
-    {reviews.map((review) => (
+    {packs.map((pack: any) => (
       <div
-        key={review.nome}
+        key={pack.id}
         style={{
-          padding: "22px",
-          borderRadius: "24px",
+          borderRadius: "30px",
+          overflow: "hidden",
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
-          border: "1px solid rgba(214,197,160,0.10)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.22)",
-
-          animation: 'softReveal ${420 + index * 120}ms ease both'
+            "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
+          border: "1px solid rgba(214,197,160,0.14)",
+          boxShadow: "0 30px 80px rgba(0,0,0,0.34)",
         }}
       >
-        <div style={{ color: "#c5a96e", marginBottom: "12px" }}>
-          ★★★★★
-        </div>
-
-        <p
+        <img
+          src={pack.imagem}
+          alt={pack.nome}
           style={{
-            margin: "0 0 18px",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "15px",
-            lineHeight: 1.8,
-            color: "rgba(242,237,229,0.78)",
+            width: "100%",
+            display: "block",
           }}
-        >
-          “{review.texto}”
-        </p>
+        />
 
-        <div
-          style={{
-            fontFamily: "Arial, sans-serif",
-            fontWeight: 800,
-            color: "#eadfc8",
-          }}
-        >
-          {review.nome}
-        </div>
+        <div style={{ padding: "22px" }}>
+          <h3
+            style={{
+              margin: "0 0 8px",
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              fontSize: "30px",
+              color: "#eadfc8",
+              fontWeight: 400,
+            }}
+          >
+            {pack.nome}
+          </h3>
 
-        <div
-          style={{
-            marginTop: "4px",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "13px",
-            color: "rgba(242,237,229,0.48)",
-          }}
-        >
-          Compra verificada
+          <p
+            style={{
+              margin: "0 0 18px",
+              color: "rgba(242,237,229,0.68)",
+              fontFamily: "Arial, sans-serif",
+              lineHeight: 1.7,
+            }}
+          >
+            {pack.descricao}
+          </p>
+
+          <div style={priceText}>{pack.preco.toFixed(2).replace(".", ",")} €</div>
+
+          <div style={{ marginTop: "18px" }}>
+            <AddToCartButton
+              id={pack.id}
+              nome={pack.nome}
+              imagem={pack.imagem}
+            />
+          </div>
         </div>
       </div>
     ))}
   </div>
-</section>
-<section
+</section><section
   style={{
     maxWidth: "1200px",
     margin: "0 auto",
