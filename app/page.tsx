@@ -10,6 +10,7 @@ export default function Page() {
   const [showRejected, setShowRejected] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDrink, setSelectedDrink] = useState("pachacha");
+  const [productPulse, setProductPulse] = useState(false);
 
   useEffect(() => {
     const verified = localStorage.getItem("ageVerified");
@@ -25,6 +26,15 @@ export default function Page() {
 
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+useEffect(() => {
+  const pulse = () => {
+    setProductPulse(true);
+    setTimeout(() => setProductPulse(false), 650);
+  };
+
+  window.addEventListener("productAdded", pulse);
+  return () => window.removeEventListener("productAdded", pulse);
+}, []);
 
   const handleAdultYes = () => {
     localStorage.setItem("ageVerified", "true");
@@ -34,6 +44,30 @@ export default function Page() {
   };
 
   const handleAdultNo = () => setShowRejected(true);
+
+ const packs = [
+  {
+    id: "pack-seducao",
+    nome: "Pack Sedução",
+    descricao: "Desejo + Clímax + Pachacha",
+    imagem: "/pack-seducao.png",
+    preco: 40,
+  },
+  {
+    id: "pack-intenso",
+    nome: "Pack Intenso",
+    descricao: "Obsessão + Orgasmo + Tântrico",
+    imagem: "/pack-intenso.png",
+    preco: 40,
+  },
+  {
+    id: "pack-descoberta",
+    nome: "Pack Descoberta",
+    descricao: "3 sabores à escolha para descobrir a coleção.",
+    imagem: "/pack-descoberta.png",
+    preco: 40,
+  },
+]; 
 
   const bebidas = [
     {
@@ -79,7 +113,23 @@ export default function Page() {
       frase: "O auge da experiência sensorial.",
     },
   ];
-
+const reviews = [
+  {
+    nome: "Mariana S.",
+    texto:
+      "A apresentação é linda e o sabor fica mesmo na memória. Comprei para oferecer e foi um sucesso.",
+  },
+  {
+    nome: "Ricardo M.",
+    texto:
+      "Produto diferente, elegante e com muita personalidade. A embalagem tem um aspeto premium.",
+  },
+  {
+    nome: "Joana P.",
+    texto:
+      "Gostei muito da experiência. O pack compensa e as garrafas ficam incríveis numa mesa.",
+  },
+];
   const activeDrink = useMemo(
     () => bebidas.find((b) => b.id === selectedDrink) ?? bebidas[0],
     [selectedDrink]
@@ -488,13 +538,20 @@ export default function Page() {
   src={activeDrink.img}
   alt={activeDrink.nome}
   style={{
-    width: isMobile ? "76%" : "68%",
-    maxHeight: isMobile ? "360px" : "620px",
-    objectFit: "contain",
-    filter: "drop-shadow(0 0 40px rgba(212,190,160,0.20))",
-    transition: "transform 500ms ease, filter 500ms ease",
-    transform: "translateY(0) scale(1)",
-  }}
+  width: isMobile ? "76%" : "68%",
+  maxHeight: isMobile ? "360px" : "620px",
+  objectFit: "contain",
+
+  filter: productPulse
+    ? "drop-shadow(0 0 60px rgba(212,190,160,0.45))"
+    : "drop-shadow(0 0 40px rgba(212,190,160,0.20))",
+
+  transition: "transform 500ms ease, filter 500ms ease",
+
+  transform: productPulse
+    ? "translateY(-8px) scale(1.035)"
+    : "translateY(0) scale(1)",
+}}
 />
 
                 <div
@@ -644,7 +701,155 @@ export default function Page() {
               </a>
             </div>
           </section>
+<section
+  style={{
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: isMobile ? "10px 16px 60px" : "10px 28px 80px",
+  }}
+>
+  <div style={eyebrow}>Opiniões de compradores</div>
 
+  <h2
+    style={{
+      margin: "0 0 24px",
+      fontFamily: 'Georgia, "Times New Roman", serif',
+      fontSize: isMobile ? "30px" : "48px",
+      fontWeight: 400,
+      color: "#efe4cf",
+    }}
+  >
+    Quem prova, lembra.
+  </h2>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+      gap: "18px",
+    }}
+  >
+    {reviews.map((review) => (
+      <div
+        key={review.nome}
+        style={{
+          padding: "22px",
+          borderRadius: "24px",
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
+          border: "1px solid rgba(214,197,160,0.10)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.22)",
+
+          animation: 'softReveal ${420 + index * 120}ms ease both'
+        }}
+      >
+        <div style={{ color: "#c5a96e", marginBottom: "12px" }}>
+          ★★★★★
+        </div>
+
+        <p
+          style={{
+            margin: "0 0 18px",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "15px",
+            lineHeight: 1.8,
+            color: "rgba(242,237,229,0.78)",
+          }}
+        >
+          “{review.texto}”
+        </p>
+
+        <div
+          style={{
+            fontFamily: "Arial, sans-serif",
+            fontWeight: 800,
+            color: "#eadfc8",
+          }}
+        >
+          {review.nome}
+        </div>
+
+        <div
+          style={{
+            marginTop: "4px",
+            fontFamily: "Arial, sans-serif",
+            fontSize: "13px",
+            color: "rgba(242,237,229,0.48)",
+          }}
+        >
+          Compra verificada
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+<section
+  style={{
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: isMobile ? "10px 16px 60px" : "10px 28px 80px",
+  }}
+>
+  <div style={eyebrow}>Opiniões de compradores</div>
+
+  <h2
+    style={{
+      margin: "0 0 20px",
+      fontFamily: 'Georgia, "Times New Roman", serif',
+      fontSize: isMobile ? "30px" : "52px",
+      fontWeight: 400,
+      color: "#efe4cf",
+    }}
+  >
+    Experiências que ficam.
+  </h2>
+
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+      gap: "18px",
+    }}
+  >
+    {reviews.map((review: any) => (
+      <div
+        key={review.nome}
+        style={{
+          padding: "24px",
+          borderRadius: "28px",
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
+          border: "1px solid rgba(214,197,160,0.12)",
+          boxShadow: "0 24px 70px rgba(0,0,0,0.28)",
+        }}
+      >
+        <div style={{ color: "#c5a96e", marginBottom: "12px" }}>
+          ★★★★★
+        </div>
+
+        <p
+          style={{
+            margin: "0 0 18px",
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            fontSize: "18px",
+            lineHeight: 1.6,
+            color: "rgba(242,237,229,0.86)",
+          }}
+        >
+          “{review.texto}”
+        </p>
+
+        <div style={{ fontWeight: 900, color: "#eadfc8" }}>
+          {review.nome}
+        </div>
+
+        <div style={{ fontSize: "12px", opacity: 0.5 }}>
+          Compra verificada
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
           <footer
             style={{
               maxWidth: "1200px",
