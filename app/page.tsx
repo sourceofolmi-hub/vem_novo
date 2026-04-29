@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import type React from "react";
 import Link from "next/link";
 import CartButton from "./components/CartButton";
 import AddToCartButton from "./components/AddToCartButton";
@@ -9,97 +10,33 @@ export default function Page() {
   const [isAdultConfirmed, setIsAdultConfirmed] = useState(false);
   const [showRejected, setShowRejected] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [selectedDrink, setSelectedDrink] = useState("pachacha");
-  const [productPulse, setProductPulse] = useState(false);
-  const [isChanging, setIsChanging] = useState(false);
-  const [slideProgress, setSlideProgress] = useState(0);
+  const [displayDrink, setDisplayDrink] = useState("pachacha");
+  const [nextDrink, setNextDrink] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const verified = localStorage.getItem("ageVerified");
-
-    if (verified === "true") {
-      setIsAdultConfirmed(true);
-      window.dispatchEvent(new Event("startGlobalMusic"));
-    }
-
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-useEffect(() => {
-  const pulse = () => {
-    setProductPulse(true);
-    setTimeout(() => setProductPulse(false), 650);
-  };
-
-  window.addEventListener("productAdded", pulse);
-  return () => window.removeEventListener("productAdded", pulse);
-}, []);
-
-useEffect(() => {
-  if (!isAdultConfirmed) return;
-
-  setSlideProgress(0);
-
-  const progress = setInterval(() => {
-    setSlideProgress((p) => (p >= 100 ? 0 : p + 2));
-  }, 80);
-
-  const interval = setInterval(() => {
-    setIsChanging(true);
-
-    setTimeout(() => {
-      setSelectedDrink((current) => {
-        const index = bebidas.findIndex((b) => b.id === current);
-        const nextIndex = (index + 1) % bebidas.length;
-        return bebidas[nextIndex].id;
-      });
-
-      setSlideProgress(0);
-      setIsChanging(false);
-    }, 350);
-  }, 4000);
-
-  return () => {
-    clearInterval(progress);
-    clearInterval(interval);
-  };
-}, [isAdultConfirmed]);
-
-  const handleAdultYes = () => {
-    localStorage.setItem("ageVerified", "true");
-    setShowRejected(false);
-    setIsAdultConfirmed(true);
-    window.dispatchEvent(new Event("startGlobalMusic"));
-  };
-
-  const handleAdultNo = () => setShowRejected(true);
-
- const packs = [
-  {
-    id: "pack-descoberta",
-    nome: "Pack Descoberta",
-    descricao: "3 sabores à escolha para descobrir a coleção.",
-    imagem: "/packs/pack-descoberta.png",
-    preco: 39.9,
-  },
-  {
-    id: "pack-seducao",
-    nome: "Pack Sedução",
-    descricao: "Desejo + Clímax + Pachacha",
-    imagem: "/packs/pack-seducao.png",
-    preco: 59.9,
-  },
-  {
-    id: "pack-intenso",
-    nome: "Pack Intenso",
-    descricao: "Obsessão + Orgasmo + Tântrico",
-    imagem: "/packs/pack-intenso.png",
-    preco: 79.9,
-  },
-];
+  const packs = [
+    {
+      id: "pack-descoberta",
+      nome: "Pack Descoberta",
+      descricao: "3 sabores à escolha para descobrir a coleção.",
+      imagem: "/packs/pack-descoberta.png",
+      preco: 39.9,
+    },
+    {
+      id: "pack-seducao",
+      nome: "Pack Sedução",
+      descricao: "Desejo + Clímax + Pachacha",
+      imagem: "/packs/pack-seducao.png",
+      preco: 59.9,
+    },
+    {
+      id: "pack-intenso",
+      nome: "Pack Intenso",
+      descricao: "Obsessão + Orgasmo + Tântrico",
+      imagem: "/packs/pack-intenso.png",
+      preco: 79.9,
+    },
+  ];
 
   const bebidas = [
     {
@@ -145,36 +82,109 @@ useEffect(() => {
       frase: "O auge da experiência sensorial.",
     },
   ];
-const reviews = [
-  {
-    nome: "Mariana S.",
-    texto: "Adorei o Pack Sedução. A apresentação é linda e parece mesmo um presente premium.",
-  },
-  {
-    nome: "Ricardo M.",
-    texto: "O Pack Intenso surpreendeu. Visual elegante, sabor marcante e entrega rápida.",
-  },
-  {
-    nome: "Joana P.",
-    texto: "Comprei o Pack Descoberta para oferecer e toda a gente ficou curiosa. Recomendo.",
-  },
-  {
-    nome: "Sofia A.",
-    texto: "As garrafas são ainda mais bonitas ao vivo. A experiência parece muito cuidada.",
-  },
-  {
-    nome: "João M.",
-    texto: "Entrega discreta e produto com muita personalidade. Já quero experimentar outros.",
-  },
-  {
-    nome: "Carla R.",
-    texto: "Gostei muito do detalhe dos packs. Fica mesmo com aspeto de marca de luxo.",
-  },
-];
-  const activeDrink = useMemo(
-    () => bebidas.find((b) => b.id === selectedDrink) ?? bebidas[0],
-    [selectedDrink]
-  );
+
+  const reviews = [
+    {
+      nome: "Mariana S.",
+      texto:
+        "Adorei o Pack Sedução. A apresentação é linda e parece mesmo um presente premium.",
+    },
+    {
+      nome: "Ricardo M.",
+      texto:
+        "O Pack Intenso surpreendeu. Visual elegante, sabor marcante e entrega rápida.",
+    },
+    {
+      nome: "Joana P.",
+      texto:
+        "Comprei o Pack Descoberta para oferecer e toda a gente ficou curiosa. Recomendo.",
+    },
+    {
+      nome: "Sofia A.",
+      texto:
+        "As garrafas são ainda mais bonitas ao vivo. A experiência parece muito cuidada.",
+    },
+    {
+      nome: "João M.",
+      texto:
+        "Entrega discreta e produto com muita personalidade. Já quero experimentar outros.",
+    },
+    {
+      nome: "Carla R.",
+      texto:
+        "Gostei muito do detalhe dos packs. Fica mesmo com aspeto de marca de luxo.",
+    },
+  ];
+
+  const activeDrink = bebidas.find((b) => b.id === displayDrink) ?? bebidas[0];
+
+  const nextActiveDrink = nextDrink
+    ? bebidas.find((b) => b.id === nextDrink)
+    : null;
+
+  useEffect(() => {
+    const verified = localStorage.getItem("ageVerified");
+
+    if (verified === "true") {
+      setIsAdultConfirmed(true);
+      window.dispatchEvent(new Event("startGlobalMusic"));
+    }
+
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const changeDrink = (id: string) => {
+    if (id === displayDrink || nextDrink) return;
+
+    setNextDrink(id);
+
+    setTimeout(() => {
+      setDisplayDrink(id);
+      setNextDrink(null);
+    }, 650);
+  };
+
+  const prevDrink = () => {
+    const index = bebidas.findIndex((b) => b.id === displayDrink);
+    const prevIndex = index === 0 ? bebidas.length - 1 : index - 1;
+    changeDrink(bebidas[prevIndex].id);
+  };
+
+  const nextDrinkManual = () => {
+    const index = bebidas.findIndex((b) => b.id === displayDrink);
+    const nextIndex = (index + 1) % bebidas.length;
+    changeDrink(bebidas[nextIndex].id);
+  };
+
+  useEffect(() => {
+    if (!isAdultConfirmed) return;
+
+    const interval = setInterval(() => {
+      const index = bebidas.findIndex((b) => b.id === displayDrink);
+      const nextIndex = (index + 1) % bebidas.length;
+      changeDrink(bebidas[nextIndex].id);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isAdultConfirmed, displayDrink, nextDrink]);
+
+  const handleAdultYes = () => {
+    localStorage.setItem("ageVerified", "true");
+    setShowRejected(false);
+    setIsAdultConfirmed(true);
+    window.dispatchEvent(new Event("startGlobalMusic"));
+  };
+
+  const handleAdultNo = () => setShowRejected(true);
+
+  const goHome = () => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -302,7 +312,7 @@ const reviews = [
               top: 0,
               zIndex: 50,
               borderBottom: "1px solid rgba(214,197,160,0.16)",
-              background: "rgba(8,8,8,0.38)",
+              background: "rgba(8,8,8,0.50)",
               backdropFilter: "blur(12px)",
             }}
           >
@@ -315,10 +325,21 @@ const reviews = [
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: "18px",
-                flexWrap: "wrap",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              <button
+                onClick={goHome}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  background: "transparent",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
                 <img
                   src="/logo.png"
                   alt="Vem T'Aki"
@@ -339,10 +360,81 @@ const reviews = [
                     Vem T'Aki
                   </div>
                 </div>
-              </div>
+              </button>
 
-              <CartButton />
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <CartButton />
+
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "999px",
+                    border: "1px solid rgba(214,197,160,0.22)",
+                    background: "rgba(255,255,255,0.035)",
+                    color: "#eadfc8",
+                    fontSize: "28px",
+                    cursor: "pointer",
+                    lineHeight: 1,
+                  }}
+                  aria-label="Abrir menu"
+                >
+                  ☰
+                </button>
+              </div>
             </div>
+
+            {menuOpen && (
+              <nav
+                style={{
+                  position: "absolute",
+                  top: "82px",
+                  right: "28px",
+                  zIndex: 80,
+                  width: "240px",
+                  padding: "14px",
+                  borderRadius: "22px",
+                  background: "rgba(10,10,10,0.94)",
+                  border: "1px solid rgba(214,197,160,0.18)",
+                  boxShadow: "0 28px 80px rgba(0,0,0,0.45)",
+                  display: "grid",
+                  gap: "8px",
+                }}
+              >
+                <button onClick={goHome} style={menuItemBtn}>
+                  Início
+                </button>
+                <Link
+                  href="#historia"
+                  onClick={() => setMenuOpen(false)}
+                  style={menuItemBtn}
+                >
+                  História
+                </Link>
+                <Link
+                  href="#colecao"
+                  onClick={() => setMenuOpen(false)}
+                  style={menuItemBtn}
+                >
+                  Garrafas
+                </Link>
+                <Link
+                  href="#packs"
+                  onClick={() => setMenuOpen(false)}
+                  style={menuItemBtn}
+                >
+                  Packs
+                </Link>
+                <Link
+                  href="#quem-somos"
+                  onClick={() => setMenuOpen(false)}
+                  style={menuItemBtn}
+                >
+                  Quem somos
+                </Link>
+              </nav>
+            )}
           </header>
 
           <section
@@ -437,6 +529,7 @@ const reviews = [
           </section>
 
           <section
+            id="historia"
             style={{
               maxWidth: "1440px",
               margin: "0 auto",
@@ -503,12 +596,12 @@ const reviews = [
               }}
             >
               {bebidas.map((bebida) => {
-                const active = bebida.id === selectedDrink;
+                const active = bebida.id === displayDrink;
 
                 return (
                   <button
                     key={bebida.id}
-                    onClick={() => setSelectedDrink(bebida.id)}
+                    onClick={() => changeDrink(bebida.id)}
                     style={{
                       whiteSpace: "nowrap",
                       borderRadius: "999px",
@@ -536,7 +629,7 @@ const reviews = [
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "1.02fr 0.98fr",
+                gridTemplateColumns: isMobile ? "1fr" : "1.08fr 0.92fr",
                 gap: isMobile ? "18px" : "28px",
                 alignItems: "stretch",
               }}
@@ -544,7 +637,7 @@ const reviews = [
               <div
                 style={{
                   position: "relative",
-                  minHeight: isMobile ? "500px" : "760px",
+                  minHeight: isMobile ? "600px" : "840px",
                   borderRadius: "28px",
                   overflow: "hidden",
                   background:
@@ -557,52 +650,86 @@ const reviews = [
                     position: "absolute",
                     inset: 0,
                     background:
-                      "radial-gradient(circle at 50% 40%, rgba(215,188,138,0.10), transparent 28%), radial-gradient(circle at 50% 100%, rgba(255,255,255,0.03), transparent 35%)",
+                      "radial-gradient(circle at 50% 40%, rgba(215,188,138,0.18), transparent 32%), radial-gradient(circle at 50% 100%, rgba(255,255,255,0.04), transparent 35%)",
                   }}
                 />
 
+                <button
+                  onClick={prevDrink}
+                  style={{ ...carouselArrow, left: isMobile ? "12px" : "24px" }}
+                  aria-label="Garrafa anterior"
+                >
+                  ‹
+                </button>
+
+                <button
+                  onClick={nextDrinkManual}
+                  style={{ ...carouselArrow, right: isMobile ? "12px" : "24px" }}
+                  aria-label="Garrafa seguinte"
+                >
+                  ›
+                </button>
+
                 <div
                   style={{
-                    position: "relative",
-                    zIndex: 2,
-                    height: "100%",
+                    position: "absolute",
+                    top: isMobile ? "48px" : "54px",
+                    left: isMobile ? "58px" : "82px",
+                    right: isMobile ? "58px" : "82px",
+                    bottom: isMobile ? "110px" : "120px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    padding: isMobile ? "28px 28px 125px" : "40px 40px 145px",
-                   transition: "all 500ms ease",
- 
                   }}
                 >
-                <img
-  key={activeDrink.id}
-  src={activeDrink.img}
-  alt={activeDrink.nome}
-  style={{
-  width: isMobile ? "76%" : "68%",
-  maxHeight: isMobile ? "360px" : "620px",
-  objectFit: "contain",
+                  <img
+                    src={activeDrink.img}
+                    alt={activeDrink.nome}
+                    style={{
+                      width: isMobile ? "98%" : "92%",
+                      height: "100%",
+                      maxHeight: isMobile ? "540px" : "780px",
+                      objectFit: "contain",
+                      filter: "drop-shadow(0 0 56px rgba(212,190,160,0.30))",
+                      transition: "opacity 650ms ease",
+                      opacity: nextActiveDrink ? 0 : 1,
+                    }}
+                  />
 
-  transition: "opacity 0.6s ease, transform 0.6s ease",
-
-  opacity: isChanging ? 0 : 1,
-  transform: isChanging ? "scale(0.96)" : "scale(1)",
-
-  filter: "drop-shadow(0 0 40px rgba(212,190,160,0.25))",
-}}
-/>
+                  {nextActiveDrink && (
+                    <img
+                      src={nextActiveDrink.img}
+                      alt={nextActiveDrink.nome}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        margin: "auto",
+                        width: isMobile ? "98%" : "92%",
+                        height: "100%",
+                        maxHeight: isMobile ? "540px" : "780px",
+                        objectFit: "contain",
+                        filter: "drop-shadow(0 0 56px rgba(212,190,160,0.30))",
+                        opacity: 1,
+                        transition: "opacity 650ms ease",
+                      }}
+                    />
+                  )}
+                </div>
 
                 <div
-  style={{
-    marginTop: "22px",
-    display: "flex",
-    justifyContent: "center",
-  }}
->
-  <Link href={activeDrink.href} style={storyLinkBtn}>
-  Descobrir história
-</Link>
-</div>
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: "38px",
+                    display: "flex",
+                    justifyContent: "center",
+                    zIndex: 9,
+                  }}
+                >
+                  <Link href={activeDrink.href} style={storyLinkBtn}>
+                    Descobrir história
+                  </Link>
                 </div>
               </div>
 
@@ -657,23 +784,23 @@ const reviews = [
                     >
                       <div style={smallLabel}>Preço unitário</div>
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "18px",
-    flexWrap: "wrap",
-  }}
->
-  <div style={priceText}>15 €</div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "18px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div style={priceText}>15 €</div>
 
-  <AddToCartButton
-    id={activeDrink.id}
-    nome={activeDrink.nome}
-    imagem={activeDrink.img}
-  />
-</div>
+                        <AddToCartButton
+                          id={activeDrink.id}
+                          nome={activeDrink.nome}
+                          imagem={activeDrink.img}
+                        />
+                      </div>
                     </div>
 
                     <div
@@ -739,164 +866,170 @@ const reviews = [
               </a>
             </div>
           </section>
-<section
-  style={{
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: isMobile ? "20px 16px 60px" : "30px 28px 90px",
-  }}
->
-  <div style={eyebrow}>Packs exclusivos</div>
 
-  <h2
-    style={{
-      margin: "0 0 14px",
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: isMobile ? "34px" : "58px",
-      fontWeight: 400,
-      color: "#efe4cf",
-    }}
-  >
-    Descobre o teu ritual.
-  </h2>
-
-  <p style={sectionText(isMobile)}>
-    Packs pensados para oferecer, descobrir ou transformar um momento numa experiência memorável.
-  </p>
-
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-      gap: "22px",
-      marginTop: "28px",
-    }}
-  >
-    {packs.map((pack: any) => (
-      <div
-        key={pack.id}
-        style={{
-          borderRadius: "30px",
-          overflow: "hidden",
-          background:
-            "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
-          border: "1px solid rgba(214,197,160,0.14)",
-          boxShadow: "0 30px 80px rgba(0,0,0,0.34)",
-        }}
-      >
-        <img
-          src={pack.imagem}
-          alt={pack.nome}
-          style={{
-            width: "100%",
-            display: "block",
-          }}
-        />
-
-        <div style={{ padding: "22px" }}>
-          <h3
+          <section
+            id="packs"
             style={{
-              margin: "0 0 8px",
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize: "30px",
-              color: "#eadfc8",
-              fontWeight: 400,
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: isMobile ? "20px 16px 60px" : "30px 28px 90px",
             }}
           >
-            {pack.nome}
-          </h3>
+            <div style={eyebrow}>Packs exclusivos</div>
 
-          <p
+            <h2
+              style={{
+                margin: "0 0 14px",
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontSize: isMobile ? "34px" : "58px",
+                fontWeight: 400,
+                color: "#efe4cf",
+              }}
+            >
+              Descobre o teu ritual.
+            </h2>
+
+            <p style={sectionText(isMobile)}>
+              Packs pensados para oferecer, descobrir ou transformar um momento numa experiência memorável.
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                gap: "22px",
+                marginTop: "28px",
+              }}
+            >
+              {packs.map((pack) => (
+                <div
+                  key={pack.id}
+                  style={{
+                    borderRadius: "30px",
+                    overflow: "hidden",
+                    background:
+                      "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
+                    border: "1px solid rgba(214,197,160,0.14)",
+                    boxShadow: "0 30px 80px rgba(0,0,0,0.34)",
+                  }}
+                >
+                  <img
+                    src={pack.imagem}
+                    alt={pack.nome}
+                    style={{
+                      width: "100%",
+                      display: "block",
+                    }}
+                  />
+
+                  <div style={{ padding: "22px" }}>
+                    <h3
+                      style={{
+                        margin: "0 0 8px",
+                        fontFamily: 'Georgia, "Times New Roman", serif',
+                        fontSize: "30px",
+                        color: "#eadfc8",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {pack.nome}
+                    </h3>
+
+                    <p
+                      style={{
+                        margin: "0 0 18px",
+                        color: "rgba(242,237,229,0.68)",
+                        fontFamily: "Arial, sans-serif",
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {pack.descricao}
+                    </p>
+
+                    <div style={priceText}>{pack.preco.toFixed(2).replace(".", ",")} €</div>
+
+                    <div style={{ marginTop: "18px" }}>
+                      <AddToCartButton
+                        id={pack.id}
+                        nome={pack.nome}
+                        imagem={pack.imagem}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section
+            id="quem-somos"
             style={{
-              margin: "0 0 18px",
-              color: "rgba(242,237,229,0.68)",
-              fontFamily: "Arial, sans-serif",
-              lineHeight: 1.7,
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: isMobile ? "10px 16px 60px" : "10px 28px 80px",
             }}
           >
-            {pack.descricao}
-          </p>
+            <div style={eyebrow}>Opiniões de compradores</div>
 
-          <div style={priceText}>{pack.preco.toFixed(2).replace(".", ",")} €</div>
+            <h2
+              style={{
+                margin: "0 0 20px",
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontSize: isMobile ? "30px" : "52px",
+                fontWeight: 400,
+                color: "#efe4cf",
+              }}
+            >
+              Experiências que ficam.
+            </h2>
 
-          <div style={{ marginTop: "18px" }}>
-            <AddToCartButton
-              id={pack.id}
-              nome={pack.nome}
-              imagem={pack.imagem}
-            />
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-</section><section
-  style={{
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: isMobile ? "10px 16px 60px" : "10px 28px 80px",
-  }}
->
-  <div style={eyebrow}>Opiniões de compradores</div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                gap: "18px",
+              }}
+            >
+              {reviews.map((review) => (
+                <div
+                  key={review.nome}
+                  style={{
+                    padding: "24px",
+                    borderRadius: "28px",
+                    background:
+                      "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
+                    border: "1px solid rgba(214,197,160,0.12)",
+                    boxShadow: "0 24px 70px rgba(0,0,0,0.28)",
+                  }}
+                >
+                  <div style={{ color: "#c5a96e", marginBottom: "12px" }}>
+                    ★★★★★
+                  </div>
 
-  <h2
-    style={{
-      margin: "0 0 20px",
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: isMobile ? "30px" : "52px",
-      fontWeight: 400,
-      color: "#efe4cf",
-    }}
-  >
-    Experiências que ficam.
-  </h2>
+                  <p
+                    style={{
+                      margin: "0 0 18px",
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      fontSize: "18px",
+                      lineHeight: 1.6,
+                      color: "rgba(242,237,229,0.86)",
+                    }}
+                  >
+                    “{review.texto}”
+                  </p>
 
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-      gap: "18px",
-    }}
-  >
-    {reviews.map((review: any) => (
-      <div
-        key={review.nome}
-        style={{
-          padding: "24px",
-          borderRadius: "28px",
-          background:
-            "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025))",
-          border: "1px solid rgba(214,197,160,0.12)",
-          boxShadow: "0 24px 70px rgba(0,0,0,0.28)",
-        }}
-      >
-        <div style={{ color: "#c5a96e", marginBottom: "12px" }}>
-          ★★★★★
-        </div>
+                  <div style={{ fontWeight: 900, color: "#eadfc8" }}>
+                    {review.nome}
+                  </div>
 
-        <p
-          style={{
-            margin: "0 0 18px",
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize: "18px",
-            lineHeight: 1.6,
-            color: "rgba(242,237,229,0.86)",
-          }}
-        >
-          “{review.texto}”
-        </p>
+                  <div style={{ fontSize: "12px", opacity: 0.5 }}>
+                    Compra verificada
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
-        <div style={{ fontWeight: 900, color: "#eadfc8" }}>
-          {review.nome}
-        </div>
-
-        <div style={{ fontSize: "12px", opacity: 0.5 }}>
-          Compra verificada
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
           <footer
             style={{
               maxWidth: "1200px",
@@ -918,12 +1051,18 @@ const reviews = [
               }}
             >
               <div>
-                <div
+                <button
+                  onClick={goHome}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "14px",
                     marginBottom: "16px",
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    textAlign: "left",
                   }}
                 >
                   <img
@@ -945,7 +1084,7 @@ const reviews = [
                       Vem T'Aki
                     </div>
                   </div>
-                </div>
+                </button>
 
                 <p
                   style={{
@@ -1090,7 +1229,6 @@ const heroBtn: React.CSSProperties = {
 };
 
 const storyLinkBtn: React.CSSProperties = {
-  marginTop: "18px",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -1133,6 +1271,36 @@ const instagramBtn: React.CSSProperties = {
   textDecoration: "none",
   fontWeight: 700,
   fontFamily: "Arial, sans-serif",
+};
+
+const carouselArrow: React.CSSProperties = {
+  position: "absolute",
+  top: "50%",
+  transform: "translateY(-50%)",
+  zIndex: 10,
+  width: "54px",
+  height: "54px",
+  borderRadius: "999px",
+  border: "1px solid rgba(214,197,160,0.22)",
+  background: "rgba(8,8,8,0.55)",
+  color: "#eadfc8",
+  fontSize: "42px",
+  lineHeight: 0.8,
+  cursor: "pointer",
+  backdropFilter: "blur(8px)",
+};
+
+const menuItemBtn: React.CSSProperties = {
+  padding: "13px 14px",
+  borderRadius: "14px",
+  color: "#eadfc8",
+  textDecoration: "none",
+  fontFamily: "Arial, sans-serif",
+  fontWeight: 700,
+  background: "transparent",
+  border: "none",
+  cursor: "pointer",
+  textAlign: "left",
 };
 
 const whatsappBtn: React.CSSProperties = {
