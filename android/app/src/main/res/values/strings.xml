@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Vem T Aki</string>
+    <string name="title_activity_main">Vem T Aki</string>
+    <string name="package_name">com.vemtaki.app</string>
+    <string name="custom_url_scheme">com.vemtaki.app</string>
+</resources>

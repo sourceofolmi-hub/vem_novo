@@ -1,0 +1,9 @@
+.container {
+  text-align: center;
+  padding: 80px;
+}
+
+.heroImg {
+  width: 300px;
+  filter: drop-shadow(0 0 40px gold);
+}
